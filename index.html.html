@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aviation Meteorology Quiz — IC Joshi</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #0a1628;
+    --sky2: #0d2044;
+    --horizon: #1a3a6e;
+    --cloud: #c8d8f0;
+    --white: #eef4ff;
+    --accent: #38bdf8;
+    --accent2: #7dd3fc;
+    --gold: #fbbf24;
+    --green: #34d399;
+    --red: #f87171;
+    --dim: #4a6080;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(56,189,248,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--sky);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 65%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 80%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 78% 8%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(2px 2px at 5% 50%, rgba(255,255,255,0.5) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Atmospheric glow */
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -20%;
+    left: -10%;
+    width: 120%;
+    height: 50%;
+    background: radial-gradient(ellipse at 50% 100%, rgba(26,58,110,0.8) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  /* ── HOME SCREEN ── */
+  #home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .plane-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+    display: block;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-12px) rotate(5deg); }
+  }
+
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+  }
+
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    max-width: 780px;
+    width: 100%;
+    margin-bottom: 2.5rem;
+  }
+
+  .topic-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--cloud);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .topic-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(56,189,248,0.12), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .topic-btn:hover::before { opacity: 1; }
+  .topic-btn:hover { border-color: var(--accent); color: var(--white); transform: translateY(-2px); }
+  .topic-btn.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 20px rgba(56,189,248,0.2);
+  }
+  .topic-btn .count {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--dim);
+    margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .topic-btn.active .count { color: var(--accent2); }
+
+  .start-btn {
+    background: linear-gradient(135deg, var(--accent), #0ea5e9);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 3rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--sky);
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 30px rgba(56,189,248,0.3);
+    text-transform: uppercase;
+  }
+  .start-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(56,189,248,0.45); }
+  .start-btn:active { transform: translateY(0); }
+
+  .mode-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .mode-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 0.45rem 1.1rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--cloud);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .mode-pill:hover, .mode-pill.active {
+    background: rgba(56,189,248,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz { display: none; min-height: 100vh; padding: 1.5rem; max-width: 760px; margin: 0 auto; }
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .progress-wrap { flex: 1; min-width: 120px; }
+  .progress-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--dim);
+    margin-bottom: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #7dd3fc);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .stat-chips { display: flex; gap: 0.6rem; flex-shrink: 0; }
+  .chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.35rem 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .chip .val { font-weight: 600; color: var(--accent); }
+  .chip.correct .val { color: var(--green); }
+  .chip.wrong .val { color: var(--red); }
+
+  .topic-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 6px;
+    padding: 0.2rem 0.6rem;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+  }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--dim);
+    margin-bottom: 0.6rem;
+  }
+
+  .q-text {
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--white);
+  }
+
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .opt-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    color: var(--cloud);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    position: relative;
+    overflow: hidden;
+  }
+  .opt-btn:hover:not(:disabled) {
+    background: rgba(56,189,248,0.08);
+    border-color: rgba(56,189,248,0.4);
+    color: var(--white);
+    transform: translateX(3px);
+  }
+  .opt-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--dim);
+    background: rgba(255,255,255,0.06);
+    border-radius: 5px;
+    padding: 0.15rem 0.45rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    transition: all 0.18s;
+  }
+
+  .opt-btn.correct {
+    background: rgba(52,211,153,0.12);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .opt-btn.correct .opt-key { background: var(--green); color: var(--sky); }
+
+  .opt-btn.wrong {
+    background: rgba(248,113,113,0.12);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .opt-btn.wrong .opt-key { background: var(--red); color: var(--sky); }
+
+  .opt-btn:disabled { cursor: default; transform: none !important; }
+
+  .feedback-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .feedback-bar.show { display: flex; }
+  .feedback-bar.correct-fb { border-color: var(--green); background: rgba(52,211,153,0.08); }
+  .feedback-bar.wrong-fb { border-color: var(--red); background: rgba(248,113,113,0.08); }
+  .fb-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .fb-text { color: var(--cloud); line-height: 1.5; }
+
+  .btn-row { display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; }
+
+  .nav-btn {
+    background: linear-gradient(135deg, var(--accent), #0ea5e9);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 1.8rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: var(--sky);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(56,189,248,0.35); }
+  .nav-btn.skip {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+  }
+  .nav-btn.skip:hover { border-color: var(--dim); color: var(--cloud); }
+
+  /* timer */
+  .timer-ring { display: flex; align-items: center; gap: 0.5rem; }
+  .timer-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--accent);
+    transition: color 0.3s;
+    min-width: 1.8rem;
+  }
+  .timer-val.warn { color: var(--gold); }
+  .timer-val.danger { color: var(--red); animation: pulse 0.5s ease infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+  /* ── RESULTS SCREEN ── */
+  #results { display: none; min-height: 100vh; padding: 2rem; text-align: center; max-width: 680px; margin: 0 auto; }
+
+  .result-plane {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+    animation: land 1s ease forwards;
+  }
+  @keyframes land {
+    from { transform: translateY(-30px) rotate(-10deg); opacity: 0; }
+    to { transform: translateY(0) rotate(0deg); opacity: 1; }
+  }
+
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-track { stroke: rgba(255,255,255,0.08); fill: none; stroke-width: 10; }
+  .score-ring-fill {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-pct {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+  }
+  .score-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .grade-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .grade-sub { font-size: 0.9rem; color: var(--dim); margin-bottom: 2rem; }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .rstat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+  .rstat .rv {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+  .rstat .rl { font-size: 0.72rem; color: var(--dim); margin-top: 0.2rem; }
+
+  .topic-breakdown {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+  .topic-breakdown h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .tb-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+  .tb-name { font-size: 0.78rem; flex: 1; color: var(--cloud); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tb-bar-wrap { flex: 2; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+  .tb-bar { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .tb-score { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--dim); min-width: 2.5rem; text-align: right; }
+
+  .result-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+  .result-btns button {
+    background: linear-gradient(135deg, var(--accent), #0ea5e9);
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: var(--sky);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .result-btns button.sec {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--cloud);
+  }
+  .result-btns button:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(56,189,248,0.3); }
+
+  /* Streak badge */
+  .streak-pop {
+    position: fixed;
+    top: 1.5rem; right: 1.5rem;
+    background: rgba(251,191,36,0.15);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .streak-pop.show { opacity: 1; transform: translateY(0); }
+
+  /* XP Pop */
+  .xp-pop {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 12px rgba(52,211,153,0.5);
+    opacity: 0;
+    z-index: 200;
+    transition: all 0s;
+  }
+  .xp-pop.fly {
+    animation: xpFly 0.8s ease forwards;
+  }
+  @keyframes xpFly {
+    0% { opacity: 1; transform: translateY(0) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+  }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 8px; height: 8px;
+    top: -10px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 300;
+    border-radius: 2px;
+  }
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+  }
+
+  /* Responsive */
+  @media (max-width: 520px) {
+    .result-stats { grid-template-columns: repeat(2, 1fr); }
+    .topic-grid { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 1.8rem; }
+    .q-text { font-size: 0.95rem; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════ HOME ══════════ -->
+  <div id="home">
+    <span class="plane-icon">✈️</span>
+    <h1>Aviation <span>Meteorology</span></h1>
+    <p class="subtitle">IC Joshi — Ground Subjects CPL/ATPL &nbsp;·&nbsp; VII Edition</p>
+
+    <div class="mode-row">
+      <button class="mode-pill active" id="modeAll" onclick="setMode('all')">🌐 All Questions</button>
+      <button class="mode-pill" id="modeRandom" onclick="setMode('random')">🎲 Random 30</button>
+      <button class="mode-pill" id="modeWeak" onclick="setMode('weak')">⚠️ Weak Areas</button>
+    </div>
+
+    <div class="topic-grid" id="topicGrid"></div>
+    <button class="start-btn" onclick="startQuiz()">Start Flight ›</button>
+  </div>
+
+  <!-- ══════════ QUIZ ══════════ -->
+  <div id="quiz">
+    <div class="quiz-header">
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="qLabel">Q 1 / 1</span>
+          <div class="timer-ring">⏱ <span class="timer-val" id="timerVal">20</span>s</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="stat-chips">
+        <div class="chip correct">✓ <span class="val" id="scoreC">0</span></div>
+        <div class="chip wrong">✗ <span class="val" id="scoreW">0</span></div>
+        <div class="chip">⚡ <span class="val" id="xpVal">0</span> XP</div>
+      </div>
+    </div>
+
+    <div class="topic-tag" id="qTopic">TOPIC</div>
+
+    <div class="question-card">
+      <div class="q-num" id="qNum">Q001</div>
+      <div class="q-text" id="qText"></div>
+    </div>
+
+    <div class="options-grid" id="optGrid"></div>
+
+    <div class="feedback-bar" id="feedbackBar">
+      <span class="fb-icon" id="fbIcon"></span>
+      <span class="fb-text" id="fbText"></span>
+    </div>
+
+    <div class="btn-row">
+      <button class="nav-btn skip" onclick="skipQ()">Skip</button>
+      <button class="nav-btn" id="nextBtn" onclick="nextQ()" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════ RESULTS ══════════ -->
+  <div id="results">
+    <span class="result-plane" id="resultPlane">✈️</span>
+    <div class="score-ring">
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <circle class="score-ring-track" cx="80" cy="80" r="70"/>
+        <circle class="score-ring-fill" id="ringFill" cx="80" cy="80" r="70"/>
+      </svg>
+      <div class="score-center">
+        <div class="score-pct" id="pctText">0%</div>
+        <div class="score-label">Score</div>
+      </div>
+    </div>
+    <div class="grade-text" id="gradeText"></div>
+    <div class="grade-sub" id="gradeSub"></div>
+
+    <div class="result-stats">
+      <div class="rstat"><div class="rv" id="rsCorrect" style="color:var(--green)">0</div><div class="rl">Correct</div></div>
+      <div class="rstat"><div class="rv" id="rsWrong" style="color:var(--red)">0</div><div class="rl">Wrong</div></div>
+      <div class="rstat"><div class="rv" id="rsXP" style="color:var(--gold)">0</div><div class="rl">Total XP</div></div>
+    </div>
+
+    <div class="topic-breakdown" id="topicBreakdown"></div>
+
+    <div class="result-btns">
+      <button onclick="retryWrong()">⚠️ Retry Wrong</button>
+      <button onclick="goHome()" class="sec">🏠 Home</button>
+      <button onclick="startQuiz()" class="sec">🔄 Restart</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Streak popup -->
+<div class="streak-pop" id="streakPop">🔥 <span id="streakCount">3</span>-streak!</div>
+
+<script>
+// ══════════════════════════════════════════
+// ALL MCQ DATA  (from IC Joshi 7th Ed.)
+// ══════════════════════════════════════════
+const ALL_QUESTIONS = [
+  // ── ATMOSPHERIC PRESSURE ──
+  {t:"Atmospheric Pressure", q:"Winds in a low pressure", o:["Converge", "Diverge", "Go straight"], a:0},
+  {t:"Atmospheric Pressure", q:"Low pressure is associated with", o:["Good Weather", "Bad Weather", "None"], a:1},
+  {t:"Atmospheric Pressure", q:"In a high pressure area winds are", o:["Normal", "Strong", "Weak"], a:2},
+  {t:"Atmospheric Pressure", q:"Flying from Low to High an altimeter would read", o:["Over", "Under", "Constant"], a:1},
+  {t:"Atmospheric Pressure", q:"Isallobars are lines of equal", o:["Pressure", "Temperature Tendency", "Pressure Tendency"], a:2},
+  {t:"Atmospheric Pressure", q:"What kind of a barometer is an altimeter", o:["Aneroid", "Mercury", "Alcohol"], a:0},
+  {t:"Atmospheric Pressure", q:"A region between two Lows and Two Highs is", o:["Depression", "Secondary Low", "Col"], a:2},
+  {t:"Atmospheric Pressure", q:"Bad weather and better visibility is associated with", o:["High", "Low", "Col"], a:1},
+  {t:"Atmospheric Pressure", q:"The relationship between height and pressure is made use in construction of", o:["Altimeter", "ASI", "VSI"], a:0},
+  {t:"Atmospheric Pressure", q:"Altimeter always measure the height of aircraft above", o:["MSL", "Datum of 1013.2 hPa", "Datum at which its sub-scale is set"], a:2},
+  {t:"Atmospheric Pressure", q:"Two aircraft flying at same indicated altitude with altimeters set to 1013.2 hPa. One is flying over cold air mass and other over warm air mass. Which of the two has greater altitude?", o:["Aircraft flying over warm air mass", "Aircraft flying over cold air mass"], a:0},
+  {t:"Atmospheric Pressure", q:"The rate of fall of pressure with height in a warm air mass compared to cold air mass will be", o:["Same", "More", "Less"], a:2},
+  {t:"Atmospheric Pressure", q:"An increase of 1000 ft at MSL is associated with decrease of pressure of", o:["100 hPa", "1000 hPa", "3 hPa", "33 hPa"], a:3},
+  {t:"Atmospheric Pressure", q:"Lines drawn through places of equal pressure are known as", o:["Isobars", "Isotherms", "Isogonal", "Isoclinal"], a:0},
+  {t:"Atmospheric Pressure", q:"Which is true?", o:["Trough has frontal characteristics", "At trough winds back in N-hemisphere", "At trough winds veer in N-hemisphere"], a:1},
+  {t:"Atmospheric Pressure", q:"Semi diurnal pressure changes are most pronounced in", o:["Polar region", "Middle latitudes", "Tropics"], a:2},
+  {t:"Atmospheric Pressure", q:"Flying from Delhi to Kolkata at constant indicated altitude but experiencing drift to starboard. The actual altitude will be (vis-à-vis) indicated altitude", o:["Lower", "Same", "Higher"], a:0},
+  {t:"Atmospheric Pressure", q:"In the Southern Hemisphere, around a Low Pressure Area wind blows", o:["In clockwise direction", "In anticlockwise direction", "Across isobars towards the centre"], a:0},
+  {t:"Atmospheric Pressure", q:"Altimeter of aircraft on ground reads aerodrome elevation; its sub-scale is set to", o:["QNH", "QNE", "QFF", "QFE"], a:0},
+  {t:"Atmospheric Pressure", q:"Instrument for recording pressure is called", o:["Anemograph", "Barometer", "Hygrograph"], a:1},
+  {t:"Atmospheric Pressure", q:"Poor visibility is associated with", o:["High", "Low", "Trough"], a:0},
+  {t:"Atmospheric Pressure", q:"On either side, perpendicular to the ______ pressures rise", o:["Trough", "Ridge", "Low"], a:0},
+  {t:"Atmospheric Pressure", q:"Fall of pressure with height is more rapid in", o:["Cold areas", "Warm areas", "Humid areas"], a:0},
+  {t:"Atmospheric Pressure", q:"300 hPa in ISA corresponds to the level", o:["20,000 ft", "30,000 ft", "35,000 ft"], a:1},
+  {t:"Atmospheric Pressure", q:"18,000 ft height in ISA corresponds to the pressure level", o:["700 hPa", "200 hPa", "500 hPa"], a:2},
+  {t:"Atmospheric Pressure", q:"200 hPa in ISA corresponds to the level", o:["20,000 ft", "30,000 ft", "40,000 ft"], a:2},
+  {t:"Atmospheric Pressure", q:"24,000 ft height in ISA corresponds to pressure level", o:["400 hPa", "500 hPa", "300 hPa"], a:0},
+  {t:"Atmospheric Pressure", q:"700 hPa in ISA corresponds to the Flight level", o:["20,000 ft", "10,000 ft", "18,000 ft"], a:1},
+  {t:"Atmospheric Pressure", q:"40,000 ft height in ISA approximately corresponds to pressure level", o:["400 hPa", "500 hPa", "200 hPa"], a:2},
+  {t:"Atmospheric Pressure", q:"850 hPa in ISA corresponds to the height", o:["7,000 ft", "5,000 ft", "10,000 ft"], a:1},
+  {t:"Atmospheric Pressure", q:"Atmospheric pressure is due to", o:["Wind", "Temperature", "Gravity", "Density"], a:3},
+  {t:"Atmospheric Pressure", q:"An aircraft is gaining altitude, in spite of altimeter reading constant altitude. Why?", o:["Standard pressure has risen", "Flying towards High", "Flying towards Low", "Temperature has decreased"], a:1},
+  {t:"Atmospheric Pressure", q:"A contour of 9160 m can be expected on a constant pressure chart for pressure level", o:["500 hPa", "400 hPa", "300 hPa", "200 hPa"], a:2},
+  {t:"Atmospheric Pressure", q:"In contour chart of 300 hPa, isohypse (contours) are drawn at interval of", o:["20 gpm", "40 gpm", "60 gpm", "80 gpm"], a:3},
+  {t:"Atmospheric Pressure", q:"In constant pressure chart of 500 hPa, isohypse are drawn at interval of", o:["20 gpm", "40 gpm", "60 gpm", "80 gpm"], a:1},
+  {t:"Atmospheric Pressure", q:"QNH of an aerodrome 160 m AMSL is 1005 hPa. QFE? (Assuming 1 hPa = 8 m)", o:["1010 hPa", "985 hPa", "1005 hPa", "990 hPa"], a:1},
+  {t:"Atmospheric Pressure", q:"Steep pressure gradient would mean", o:["Contours far apart, weak wind", "Contours far apart, strong wind", "Isobars far apart and temperature low", "Isobars closely packed and strong wind"], a:3},
+  {t:"Atmospheric Pressure", q:"What type of inversion occurs when a stable layer lies in a high pressure area", o:["Negative", "Radiation", "Subsidence", "Airmass"], a:2},
+  {t:"Atmospheric Pressure", q:"Which of the following would cause true altitude to increase when altimeter indicates constant altitude?", o:["Warm / Low", "Cold / Low", "Hot / High", "Cool / Low"], a:2},
+  {t:"Atmospheric Pressure", q:"The movement of wind in relation to a cyclone is", o:["Descending and subsiding", "Ascending and converging", "Descending and cooling", "Ascending and diverging"], a:1},
+  {t:"Atmospheric Pressure", q:"An aerodrome is at mean sea level. Its QNH is 1014.0 hPa. Its QFF will be", o:["1014.0 hPa", "1013.25", "Difficult to tell", "More than QNH"], a:0},
+  // ── VISIBILITY & FOG ──
+  {t:"Visibility & Fog", q:"Fog is reported when visibility is reduced to", o:["Less than 1000 m","1000 m","1000 to 2000 m"], a:0},
+  {t:"Visibility & Fog", q:"RVR is reported when visibility falls below", o:["500 m","1000 m","1500 m","2000 m"], a:2},
+  {t:"Visibility & Fog", q:"Radiation fog occurs", o:["Over land","Over sea","During day"], a:0},
+  {t:"Visibility & Fog", q:"When visibility reduces between 5000 m and 1000 m and RH is almost 100%, it is", o:["Mist","Haze","Fog"], a:0},
+  {t:"Visibility & Fog", q:"Radiation fog forms over N India during", o:["May to June","Dec to Feb","Oct to Nov"], a:1},
+  {t:"Visibility & Fog", q:"Warm and moist air moving over a cold ground gives rise to", o:["Thunder clouds","Fog and stratus","Frontal clouds"], a:1},
+  {t:"Visibility & Fog", q:"Warm and moist air moving over a cold surface causes", o:["Radiation Fog","Advection Fog","Frontal Fog"], a:1},
+  {t:"Visibility & Fog", q:"The radiation fog forms due to", o:["Heating of the earth during day","Radiational cooling of earth at night","Advection of cold air"], a:1},
+  {t:"Visibility & Fog", q:"The radiation fog activity increases after the passage of a", o:["WD","Depression","Col"], a:0},
+  {t:"Visibility & Fog", q:"Radiation fog is essentially a phenomenon", o:["Nocturnal","Dusk","Day"], a:0},
+  {t:"Visibility & Fog", q:"The radiation fog forms over", o:["Water","Land","Both"], a:1},
+  {t:"Visibility & Fog", q:"The fog that forms due to horizontal movement of warm moist air over cold surface", o:["Radiation","Advection","Frontal"], a:1},
+  {t:"Visibility & Fog", q:"Advection fog forms during", o:["Night only","Day time only","Any time of day and night"], a:2},
+  {t:"Visibility & Fog", q:"For formation of Radiation fog, there should be", o:["Sufficient moisture, cloudy sky, nil wind","Sufficient moisture, clear sky, light wind","Sufficient moisture, cloudy sky, strong wind"], a:1},
+  {t:"Visibility & Fog", q:"Instrument used for measuring visibility is called", o:["Visiometer","Transmissometer","Ceilometer"], a:1},
+  {t:"Visibility & Fog", q:"Advection fog forms", o:["Over sea","Over land","Both over land and sea"], a:2},
+  {t:"Visibility & Fog", q:"Fog is cloud on ground", o:["Stratocumulus","Stratus","Nimbostratus"], a:1},
+  {t:"Visibility & Fog", q:"Frontal fog is more common with a", o:["Western Disturbance","Cyclone","Warm Front","Cold Front"], a:2},
+  {t:"Visibility & Fog", q:"The favourable pressure system for formation of fog is", o:["Lows and Cols","High and Trough","Lows and Ridges","Highs and Cols"], a:3},
+  {t:"Visibility & Fog", q:"Temperature distribution which favours formation of fog is", o:["Isothermal","Adiabatic","Inversion","SALR"], a:2},
+
+  // ── PRECIPITATION ──
+  {t:"Precipitation", q:"When supercooled water drops and ice particles coexist, the ice crystals grow because", o:["Saturation vapour pressure over water drops is less than ice","Saturation vapour pressure over ice is less than over water drops","Ice crystals convert into water drops"], a:1},
+  {t:"Precipitation", q:"Clouds whose tops extend well above the freezing level are called", o:["Warm Clouds","Cold Clouds","Moderate Clouds"], a:1},
+  {t:"Precipitation", q:"Clouds whose tops do not extend to the freezing level are called", o:["Warm Clouds","Cold Clouds","Moderate Clouds"], a:0},
+  {t:"Precipitation", q:"Coalescence Theory explains occurrence of rainfall from", o:["Warm Clouds","Cold Clouds","Both types of Clouds"], a:0},
+  {t:"Precipitation", q:"Ice crystal Theory explains occurrence of rainfall from", o:["Warm Clouds","Cold Clouds","Both types of Clouds"], a:1},
+  {t:"Precipitation", q:"Giant Nucleus Theory explains occurrence of rainfall over", o:["Maritime areas","Inland areas","Hilly areas"], a:0},
+  {t:"Precipitation", q:"Very heavy precipitation as showers over a short period is called", o:["Flash floods","Cloud Burst","Orographic Rain"], a:1},
+  {t:"Precipitation", q:"Rain shadow area is on the side of the mountain range", o:["Top","Windward side","Leeward side"], a:2},
+  {t:"Precipitation", q:"Sleet is a mixture of", o:["Hail & Snow","Rain & Snow","Frozen Rain"], a:1},
+  {t:"Precipitation", q:"Rainfall in the tropics is more in", o:["Winters","Summers","Post monsoon"], a:1},
+  {t:"Precipitation", q:"Rainfall in the tropics is more in the", o:["Morning","Afternoon","Night"], a:1},
+  {t:"Precipitation", q:"Rainfall in the temperate latitudes is more in", o:["Winters","Summers","Spring"], a:0},
+  {t:"Precipitation", q:"Over J&K and western Himalayas rainfall is more in", o:["Winters","Summers","Post monsoon"], a:0},
+  {t:"Precipitation", q:"Rainfall over coastal areas is more in the", o:["Evening","Afternoon","Night & early morning"], a:2},
+  {t:"Precipitation", q:"Areas to the east of western Ghats of India are rain shadow areas", o:["W","S","E"], a:2},
+  {t:"Precipitation", q:"A sudden rise of rivers or streams causing floods is called", o:["Cloud Burst","Catchments flooding","Flash Floods"], a:2},
+  {t:"Precipitation", q:"Artificial rain making is also termed as", o:["Simulation","Cloud seeding","Nucleation"], a:1},
+  {t:"Precipitation", q:"Fog can be dispersed for a short period by artificial stimulation", o:["True","False"], a:0},
+  {t:"Precipitation", q:"Showery precipitation occurs from", o:["NS","AC","CB"], a:2},
+  {t:"Precipitation", q:"A day is called Rainy day when rainfall in 24 hr is how many mm or more", o:["1.5","2","2.5"], a:2},
+
+  // ── ICE ACCRETION ──
+  {t:"Ice Accretion", q:"Hoar frost occurs on airframe in clear air when the temperature of airframe is", o:["Below the frost point","At frost point","Just above the frost point"], a:0},
+  {t:"Ice Accretion", q:"In clouds at temperatures below 0°C an aircraft may encounter icing of the type", o:["Only Glazed","Only Rime","Intermediate between these two"], a:2},
+  {t:"Ice Accretion", q:"Opaque Rime ice is", o:["Light porous","Solid","Mixture of porous and solid"], a:0},
+  {t:"Ice Accretion", q:"Rime is formed by freezing of small supercooled water droplets on airframe when aircraft is flying through clouds", o:["Small","Large","Medium"], a:0},
+  {t:"Ice Accretion", q:"Glazed ice is formed by freezing of large supercooled water droplets on airframe when aircraft is flying through clouds", o:["Small","Large","Medium"], a:1},
+  {t:"Ice Accretion", q:"The most serious aviation hazard ice is", o:["Rime","Hoar Frost","Glazed"], a:2},
+  {t:"Ice Accretion", q:"Airframe icing occurs below 0°C. Its probability decreases progressively below -20°C", o:["Increases","Decreases","Does not change"], a:1},
+  {t:"Ice Accretion", q:"CI, CS and CC clouds consist mostly ice crystals. Icing hazard is therefore", o:["Maximum","Medium","Negligible"], a:2},
+  {t:"Ice Accretion", q:"AS, NS consist of supercooled water drops and ice crystals in varying proportion. Icing is", o:["Maximum","Light or moderate","Negligible"], a:1},
+  {t:"Ice Accretion", q:"In AC clouds icing is possible in mountainous areas", o:["Light","Moderate","Severe"], a:2},
+  {t:"Ice Accretion", q:"In TCU icing may range from light to severe type at least up to -20°C level", o:["-40°C level","30°C level","-20°C level"], a:2},
+  {t:"Ice Accretion", q:"In CB icing may range from light to severe type up to -20°C. Below this temperature severe icing is", o:["Not significant","Significant","Maximum"], a:0},
+  {t:"Ice Accretion", q:"Liquid water content max concentration is around -15°C level. Max ice formation in clouds may be expected around that level", o:["-25°C level","-20°C level","-15°C level"], a:2},
+  {t:"Ice Accretion", q:"Carburetor icing occurs when air from intake passes through a ventury and causes expansional cooling at extreme temperatures", o:["13°C","30°C to -10°C","20°C"], a:1},
+  {t:"Ice Accretion", q:"Hoar Frost occurs in moist cloudless air on aircraft surface having temp below 0°C, due to sublimation of water vapour onto feathery ice crystals", o:["Rime","Glazed","Hoar Frost"], a:2},
+  {t:"Ice Accretion", q:"Rime occurs in St, Sc, Ac, Cu, Ns at temperature -10 to -40°C", o:["Rime","Glazed","Hoar Frost"], a:0},
+  {t:"Ice Accretion", q:"In clouds, mixture of rime and clear ice occurs when wide range of water drop sizes are present at temperatures between 0°C and -40°C", o:["Rime","Glazed","Mixture of rime and clear ice"], a:2},
+  {t:"Ice Accretion", q:"Mixture of Rime and Clear ice occurs in AS, NS, AC and towering CU or CB between 0°C and -20°C, in warm front below 0°C", o:["Glazed","Rime","Mixture of Rime and Clear ice"], a:2},
+  {t:"Ice Accretion", q:"When fog freezes on parked aircraft it produces", o:["Hoar Frost","Rime","Clear ice"], a:0},
+  {t:"Ice Accretion", q:"Icing increases the stalling speed appreciably", o:["Decreases","Increases","Does not increase/decrease"], a:1},
+
+  // ── THUNDERSTORM ──
+  {t:"Thunderstorm", q:"The condition necessary for the formation of a thunderstorm are", o:["Steep lapse rate, strong winds","Shallow lapse rate, adequate supply of moisture","Steep lapse rate, adequate supply of moisture and trigger action"], a:2},
+  {t:"Thunderstorm", q:"Hail is most likely to fall from a cloud having", o:["Layers","Composed of ice crystals","Strong vertical development"], a:2},
+  {t:"Thunderstorm", q:"Norwesters are", o:["The western disturbances which affect NW India","Severe thunderstorms which occur over NE India during hot weather period","Severe thunderstorms which occur over Peninsula during hot weather period"], a:1},
+  {t:"Thunderstorm", q:"Duststorm usually occurs over NW India during", o:["Post-monsoon","Winter","Pre-Monsoon"], a:2},
+  {t:"Thunderstorm", q:"A 'mature' thunderstorm has strong", o:["Updraft only","Downdraft only","Updrafts and downdrafts"], a:2},
+  {t:"Thunderstorm", q:"Aircraft icing is most favoured in the cloud with temperatures ranging between", o:["-20°C and -40°C","0°C and -20°C","Below -40°C"], a:1},
+  {t:"Thunderstorm", q:"A short duration, showery precipitation is associated with", o:["ST","AS","CB"], a:2},
+  {t:"Thunderstorm", q:"Hail is solid precipitation falling from a deep convective cloud", o:["Solid precipitation over mountainous regions in winters","Frozen or partly frozen rain falling from sheet type of clouds","Solid precipitation falling from a deep convective cloud"], a:2},
+  {t:"Thunderstorm", q:"The most hazardous cloud for aviation is", o:["CB","CU","NS"], a:0},
+  {t:"Thunderstorm", q:"The life of a CB cell is usually", o:["7 to 8 hrs","3 to 4 hrs","2-3 hrs"], a:2},
+  {t:"Thunderstorm", q:"Generally the severest activity of a heat type TS is for", o:["2 hrs","30 to 45 min","3 to 4 hrs"], a:1},
+  {t:"Thunderstorm", q:"Norwesters occur during", o:["Jan-Feb","Mar-May","June-Sep","Oct-Dec"], a:1},
+  {t:"Thunderstorm", q:"Norwesters occur during", o:["Winter","Hot weather","Monsoon","Post Monsoon"], a:1},
+  {t:"Thunderstorm", q:"Norwesters affect", o:["N India","Bengal, Bihar, Orissa and Assam","Central India"], a:1},
+  {t:"Thunderstorm", q:"The trigger action may take place due to", o:["Clear night sky, no wind","Orographic lifting","High pressure"], a:1},
+  {t:"Thunderstorm", q:"Norwesters normally occur during", o:["Mornings","Afternoons","Nights"], a:1},
+  {t:"Thunderstorm", q:"Norwesters originate over", o:["Chota-Nagpur hills","Deccan Plato","Khasi hills"], a:0},
+  {t:"Thunderstorm", q:"Andhi (blinding storms) occur generally over", o:["S India","N India","NE India"], a:1},
+  {t:"Thunderstorm", q:"Wind speed in Light DS is", o:["25 kt","30 kt","Up to 21 kt"], a:2},
+  {t:"Thunderstorm", q:"The diameter of Microburst is", o:["Less than 4 km","Less than 2 km","Less than 6 km"], a:0},
+  {t:"Thunderstorm", q:"The diameter of Macroburst is", o:["< 4 km","4 km or more","> 8 km"], a:1},
+  {t:"Thunderstorm", q:"For detecting precipitation a Radar wavelength in the range suitable is", o:["30 to 200 mm","400-500 mm","600-700 mm"], a:0},
+  {t:"Thunderstorm", q:"For airborne radars wavelength generally used", o:["20 mm","40 mm","60 mm"], a:2},
+  {t:"Thunderstorm", q:"The wavelength of TS detection X band radar is", o:["10 mm","20 mm","30 mm"], a:2},
+  {t:"Thunderstorm", q:"The wavelength of storm detection S band radar is", o:["50 mm","100 mm","200 mm"], a:1},
+  {t:"Thunderstorm", q:"Over plains TS mostly occur during the", o:["Afternoon","Night","Early morning"], a:0},
+  {t:"Thunderstorm", q:"Over valley and foot hills TS generally occur during", o:["Afternoon","Night & early morning","Morning"], a:1},
+  {t:"Thunderstorm", q:"Over the sea TS are more frequent", o:["Afternoon","Night","Early morning"], a:1},
+  {t:"Thunderstorm", q:"The life of Mesoscale Convective Complex TS is", o:["2-3 hr","3-4 hr","6 to 24 hr"], a:2},
+  {t:"Thunderstorm", q:"Moderate TS is classified as (loud thunder, frequent lightning, moderate/heavy showers, light hail, wind speed 15-40 kt)", o:["Light TS","Moderate TS","Severe TS"], a:1},
+  {t:"Thunderstorm", q:"For a severe TS one of the requirements is strong Wind Shear", o:["Horizontal","Vertical","Slant"], a:1},
+  {t:"Thunderstorm", q:"Severe TS cells are tilted", o:["In vertical","To the South","To the North"], a:0},
+  {t:"Thunderstorm", q:"When flying through active TS, lightning strikes are most likely", o:["Above 5000 ft and under the anvil","Clear air below cloud in rain","In the temperature band between +10° and -10°C"], a:2},
+  {t:"Thunderstorm", q:"Hazards of the mature stage of a TS Cell include lighting, turbulence and", o:["Microburst, wind-shear and anvil","Icing, microburst and WS","Icing, drizzle and microburst","WS, hail and fog"], a:1},
+  {t:"Thunderstorm", q:"Hail grows by", o:["Freezing as it leaves the cloud","Up and down forces in CU cloud","Collision with ice crystals","Collision with supercooled water drops"], a:3},
+
+  // ── AIR MASSES, FRONTS & WD ──
+  {t:"Air Masses, Fronts & WD", q:"The airmass which originates at sea in high Latitudes is called", o:["Polar maritime","Tropical continental","Tropical maritime"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"The airmass which originates over equatorial region is", o:["Warm and dry","Warm and Moist","Cold and dry"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"If the advancing cold front is colder than the cool air mass of the warm front, the advancing cold front undercuts and lifts both the warm and cool air masses. This is", o:["Warm Occlusion","Cold Occlusion","Neutral Occlusion"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"The airmass which originated over land area located in polar region is", o:["Warm and dry","Warm and Moist","Cold and dry"], a:2},
+  {t:"Air Masses, Fronts & WD", q:"If a warm airmass overtakes a cold air mass, it is called", o:["Cold Front","Warm Front","Occluded Front"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"At warm front", o:["Warm air overtakes the cold air","Cold air undercuts the warm air"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"The conditions are always unstable at a", o:["Cold front","Warm front"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"Sometimes Line squall occurs about 100-300 km ahead of a", o:["Warm front","Cold front"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"Precipitation occurs over a belt of 30-50 km on both side of front", o:["Cold front","Warm front"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"Cold front moves at how many times the speed of a warm front", o:["Same","Double","Half"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"Line Squalls occur ahead of Cold front", o:["Ahead","Behind","At the"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"Fronts are associated with", o:["Tropical cyclone","Monsoon Depression","Extra-tropical Cyclones"], a:2},
+  {t:"Air Masses, Fronts & WD", q:"CB, Roll-type clouds, SC, AC with embedded CB are associated with", o:["Cold front","Warm front"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"The surface of discontinuity between the Polar Easterlies and the temperate Westerlies is called", o:["Equatorial Front","Tropopause","Polar Front"], a:2},
+  {t:"Air Masses, Fronts & WD", q:"The air mass which originates from sea area located in lower latitudes is", o:["Warm and Dry","Warm and Moist","Cold and Moist"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"WDs approach India as", o:["Cols","Occluded Fronts","Highs"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"Maximum WDs occur in", o:["Summers","Post Monsoon","Winters"], a:2},
+  {t:"Air Masses, Fronts & WD", q:"Ahead of a warm front the surface wind", o:["Backs & weakens","Veers & strengthens","Backs & strengthens"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"On approach of a Warm Front temperature", o:["Fall","Rise","Remain same"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"CI, CS, AS, NS, ST in sequence are associated with the front", o:["Warm","Cold","Occluded"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"During the passage of a Cold Front winds", o:["Suddenly become squally","Back and weaken","Veer and are of moderate strength"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"Visibility is poor in a Warm Front", o:["Ahead","Ahead & During","After & During"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"Fog occurs in Cold Front", o:["Ahead","During","After"], a:2},
+  {t:"Air Masses, Fronts & WD", q:"WD is an occluded front", o:["Cold","Warm","Occluded"], a:2},
+  {t:"Air Masses, Fronts & WD", q:"FZRA and FZFG occur ahead of a warm front", o:["Ahead","During","After"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"Precipitation ceases after the passage of a front", o:["Cold","Warm","Occluded"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"During the approach of a Warm Front wind", o:["Backs","Veers","Does not change"], a:0},
+  {t:"Air Masses, Fronts & WD", q:"A WD with two or more closed isobars, at 2 hPa interval, it is termed as", o:["Troughs in Westerlies","Western Depression","Western Cyclone"], a:1},
+  {t:"Air Masses, Fronts & WD", q:"A WD originates over", o:["Baluchistan","Caspian sea","Mediterranean, Caspian and Black Seas"], a:2},
+  {t:"Air Masses, Fronts & WD", q:"Induced lows develop to the south of a WD", o:["N","S","NE"], a:1},
+
+  // ── JET STREAMS ──
+  {t:"Jet Streams", q:"The arbitrary lower limit of jet core velocity has been assigned by WMO as", o:["60 kt","60 m/s","70 m/s"], a:0},
+  {t:"Jet Streams", q:"Jet stream has", o:["One maxima","One or more maxima","Only two maxima"], a:1},
+  {t:"Jet Streams", q:"The vertical wind shear in a Jet stream is about", o:["5m/s per km","6m/s per km","8m/s per km"], a:0},
+  {t:"Jet Streams", q:"Compared to horizontal wind shear the vertical wind shear in a Jet stream is", o:["Weaker","Stronger","Same"], a:1},
+  {t:"Jet Streams", q:"In a jet stream, the path of the maximum speed is known as", o:["Core","Axis","Jet streak"], a:1},
+  {t:"Jet Streams", q:"The wind speed along the axis of a jet stream is always", o:["Uniform","Not uniform"], a:1},
+  {t:"Jet Streams", q:"Along the axis of a jet stream there are centres of high speed winds, these are called", o:["Jet streaks","Core","Axis"], a:0},
+  {t:"Jet Streams", q:"In a wavy jet the Jet streaks are located over or near the", o:["Ridge","Trough","Between Trough and Ridge"], a:0},
+  {t:"Jet Streams", q:"Sub-tropical Jet Stream (STJ) is", o:["Westerly","Easterly","Southerly"], a:0},
+  {t:"Jet Streams", q:"The normal position of Sub-tropical Jet Stream is", o:["30° N","27° N","35° N"], a:1},
+  {t:"Jet Streams", q:"The southern most position of STJ is in February", o:["22° N","20° N","18° N"], a:0},
+  {t:"Jet Streams", q:"The STJ affects India from", o:["Jun to Jul","Oct to May","Aug to Sep"], a:1},
+  {t:"Jet Streams", q:"STJ has a layered structure. There are often two layers of max wind to the south of jet core", o:["S","N","SW"], a:0},
+  {t:"Jet Streams", q:"The STJ strengthens", o:["Northwards","Upstream","Downstream"], a:2},
+  {t:"Jet Streams", q:"At and near the STJ the temperature gradient is very", o:["Small","Large","Moderate"], a:0},
+  {t:"Jet Streams", q:"Vertical wind shear in STJ is greater above the core", o:["Above","Below","Along"], a:0},
+  {t:"Jet Streams", q:"The TJ prevails over the Indian Peninsula from", o:["May to Jun","Sep to Oct","Jun to Aug"], a:2},
+  {t:"Jet Streams", q:"The TJ is located over the Indian Peninsula, approximately at", o:["13° N","17° N","18° N"], a:0},
+  {t:"Jet Streams", q:"The TJ is located over Indian, approximately at a height of", o:["15-16 km","12-13 km","11-12 km"], a:0},
+  {t:"Jet Streams", q:"The TJ is strongest in", o:["July-Aug","Sep-Oct","June"], a:0},
+  {t:"Jet Streams", q:"In the TJ wind shears are much less than the STJ", o:["More","Less","Same"], a:1},
+  {t:"Jet Streams", q:"TJ is", o:["Westerly","Easterly","Southerly"], a:1},
+  {t:"Jet Streams", q:"A jet stream can be recognized by", o:["High level dust","High Pressure","Streaks of CI clouds"], a:2},
+  {t:"Jet Streams", q:"Flying at right angles to a jet stream with falling pressure you will experience", o:["Wind from left","Increasing head wind","Increasing tail wind","Wind from right"], a:0},
+  {t:"Jet Streams", q:"When and where tropical jet stream occurs", o:["All year along equator","In Middle East in summers","In winters over Russia","In summers over SE Asia and Central Africa"], a:3},
+
+  // ── CAT & MOUNTAIN WAVES ──
+  {t:"CAT & Mountain Waves", q:"For mountain waves to form there should be flow of air across the ridge, generally within how many degrees of the perpendicular to the ridge", o:["30°","45°","60°"], a:0},
+  {t:"CAT & Mountain Waves", q:"For mountain waves to form the wind speed for small mountains should be at least", o:["15 m/s","10 m/s","7m/s"], a:2},
+  {t:"CAT & Mountain Waves", q:"For mountain waves to form the wind speed for large mountains should be at least", o:["15 m/s","10 m/s","7m/s"], a:0},
+  {t:"CAT & Mountain Waves", q:"For mountain waves to form there should be stable air below the ridge and less stable air above", o:["Stable","Unstable","Indifferent"], a:0},
+  {t:"CAT & Mountain Waves", q:"The worst kind of turbulence is encountered in the vicinity of rotor clouds", o:["Rotor Clouds","Lenticular Clouds","Cap Clouds"], a:0},
+  {t:"CAT & Mountain Waves", q:"In Mountain waves the Rotor clouds form in", o:["Troughs","Ridges","Valley"], a:1},
+  {t:"CAT & Mountain Waves", q:"Clear air turbulence is often encountered", o:["At the boundary of a jet stream","In the wake of a passing airplane","In the wake of a larger airplane at take off and landing","All of the above"], a:0},
+  {t:"CAT & Mountain Waves", q:"Most CAT occurs on the fringes of a jet stream and in the vicinity of upper level frontal zones", o:["Fringes","Within the core","Axis"], a:0},
+  {t:"CAT & Mountain Waves", q:"CAT is the bumpiness experienced by aircraft at high altitudes. Over North India its maximum frequency is during", o:["Oct-May","Jul-Aug","Jun-Sep"], a:0},
+  {t:"CAT & Mountain Waves", q:"When approaching an area where mountain waves have been reported, a pilot should expect", o:["Possible presence of roll clouds and lenticular clouds","Intense up draughts and down draughts on the lee side of the mountains","Moderate to severe turbulence as far as 20 to 30 nm from range on leeward side","All of the above"], a:3},
+
+  // ── TROPICAL SYSTEMS ──
+  {t:"Tropical Systems", q:"Wind speed in a tropical severe cyclone is", o:["27-33 kt","48-63 kt","17-27 kt"], a:1},
+  {t:"Tropical Systems", q:"Fronts are characteristic of", o:["Tropical cyclone","Extra-tropical depressions","Monsoon depressions"], a:1},
+  {t:"Tropical Systems", q:"In a mature tropical cyclone, the eye area is characterised by", o:["Moderate winds and heavy rains","Hurricane force winds and squalls","Calm wind, little clouding and practically no rainfall"], a:2},
+  {t:"Tropical Systems", q:"Cyclonic storm cross Tamil Nadu coast in", o:["Oct-Nov","Jul-Aug","Feb-May"], a:0},
+  {t:"Tropical Systems", q:"Cyclonic storms form over Indian seas during", o:["SW monsoon","Winter Season","Pre-Monsoon & Post Monsoon"], a:2},
+  {t:"Tropical Systems", q:"TRS occurs over Indian seas in", o:["Equatorial Region","5-15° N","0-5° N"], a:1},
+  {t:"Tropical Systems", q:"In the Bay of Bengal during the months of Jul, August, Monsoon Depression forms", o:["Over Head Bay","Central Bay","South Bay"], a:0},
+  {t:"Tropical Systems", q:"In a monsoon depression maximum weather occurs in", o:["SE sector","NW sector","SW sector"], a:2},
+  {t:"Tropical Systems", q:"During re-curvature maximum weather in a monsoon depression occurs in", o:["SE sector","NW sector","SW sector","NE sector"], a:3},
+  {t:"Tropical Systems", q:"On whatever compass course the cyclone is approached, strong winds from the port indicate that the centre lies somewhere", o:["Ahead","Behind","Port","Starboard"], a:0},
+  {t:"Tropical Systems", q:"The well developed extra tropical cyclonic storm is composed of two main frontal systems and an occluded front, which varies in extent", o:["A stationary Front followed by a warm front","A low with a warm front radiating out Southwards followed by a cold front","A warm front and an occluded front","None of the above"], a:1},
+  {t:"Tropical Systems", q:"Cyclonic storms are confined almost entirely to the", o:["Latitudes near Equator","Tropical latitudes","Polar lat.","Mid lat."], a:1},
+  {t:"Tropical Systems", q:"The weather expected in a well developed cyclonic storm is", o:["Moderate Weather","Stormy weather","Clear skies","No wind or temperature change"], a:1},
+  {t:"Tropical Systems", q:"After entering land the Cyclones gradually die down", o:["True","False"], a:0},
+  {t:"Tropical Systems", q:"The most dangerous part of the cyclone is", o:["Eye wall","Eye","Outer storm area","Complete cyclone"], a:0},
+  {t:"Tropical Systems", q:"No Tropical CS form", o:["At Poles","At Equator","At Lat 40 deg","All these"], a:3},
+  {t:"Tropical Systems", q:"Average life of a tropical cyclone in India is", o:["10 Days","6-8 Days","3-4 Days"], a:2},
+  {t:"Tropical Systems", q:"CS in India are mostly of intensity", o:["Severe","Very Weak","Moderate"], a:2},
+  {t:"Tropical Systems", q:"Eye of a CS is surrounded by", o:["Shelf Clouds","Wall Clouds","Rotor Clouds","Roll clouds"], a:1},
+  {t:"Tropical Systems", q:"CS in Indian region are less intense because", o:["They have a very short travel over the sea","Sea surface temp are not high","India is close to Equator"], a:0},
+  {t:"Tropical Systems", q:"Surge is sudden strengthening of wind in the same air mass", o:["Same","Different","Both"], a:0},
+  {t:"Tropical Systems", q:"Surge and Shear Line are features of vigorous monsoon", o:["Vigorous","Weak","Moderate"], a:0},
+  {t:"Tropical Systems", q:"Peninsular discontinuity occurs along", o:["West Coast","East coast","Central Peninsula"], a:2},
+  {t:"Tropical Systems", q:"Peninsular discontinuity occurs during", o:["Monsoon","NE Monsoon","Pre Monsoon"], a:2},
+  {t:"Tropical Systems", q:"Surge is also Velocity Convergence", o:["Velocity Divergence","Velocity Convergence","Like ITCZ"], a:1},
+  {t:"Tropical Systems", q:"In a depression the wind speed is", o:["< 17 kt","34-47 kt","17-27 kt","48-63 kt"], a:2},
+  {t:"Tropical Systems", q:"In a CS the wind speed is", o:["< 17 kt","34-47 kt","17-27 kt","28-33 kt"], a:1},
+  {t:"Tropical Systems", q:"A monsoon depression slopes with height", o:["SE","NW","SW","NE"], a:2},
+  {t:"Tropical Systems", q:"Average life of a monsoon depression is", o:["2-3 days","8-9 days","3-5 days","10-12 days"], a:2},
+  {t:"Tropical Systems", q:"Monsoon depressions move faster over", o:["Sea","Plains","Hills","Rivers"], a:1},
+  {t:"Tropical Systems", q:"For formation of a CS sea surface temperature should be", o:["26-27°C","23-24°C","24-25°C","30°C"], a:0},
+  {t:"Tropical Systems", q:"In extra tropical cyclone family there are 3-4 CS or depressions, one to the SW of the other", o:["SE","NW","SW","NE"], a:2},
+  {t:"Tropical Systems", q:"In TRS the central pressure is about", o:["1002-1010 hPa","1000-900 hPa","1010-1020 hPa"], a:1},
+  {t:"Tropical Systems", q:"TRS develop over", o:["Sea","Land","Islands","At equator"], a:0},
+  {t:"Tropical Systems", q:"TRS develop over 5-15 deg Lat", o:["0-5","5-15","25-30","30-40"], a:1},
+  {t:"Tropical Systems", q:"In TRS pressure gradient is very steep up to a radius of", o:["30 km","50 km","100 km","400 km"], a:2},
+  {t:"Tropical Systems", q:"Extra Tropical Storms originate in", o:["Equatorial Front","Tropical Front","Polar Front"], a:2},
+  {t:"Tropical Systems", q:"Extra-tropical Storms generally move in the direction", o:["S to E","W to E","S to W","E to W"], a:1},
+  {t:"Tropical Systems", q:"A Tropical Cyclone moves 300-500 km in a day", o:["300-500 km","500-700 km","700-900 km"], a:0},
+  {t:"Tropical Systems", q:"A Tropical CS has outer storm area of about", o:[">400 km",">700 km",">900 km"], a:0},
+
+  // ── CLIMATOLOGY OF INDIA ──
+  {t:"Climatology of India", q:"During winters, radiation fog increases after the passage of a WD over N India", o:["Advection fog occurs over northern & central parts","Radiation fog occurs in southern parts","Activity of Radiation fog increases after the passage of a WD over N India"], a:2},
+  {t:"Climatology of India", q:"Low temperatures and low humidity is the characteristic of", o:["Post Monsoon","Summer","Monsoon","Winter"], a:3},
+  {t:"Climatology of India", q:"The Summer Season period is", o:["Jan-Feb","Mar-May","Jul-Sept","Oct-Dec"], a:1},
+  {t:"Climatology of India", q:"During Summer season", o:["WDs cause TS/DS over Punjab & Rajasthan","No WD affect N-parts of country","Track of WD is southern most"], a:0},
+  {t:"Climatology of India", q:"The monsoon current over the West coast of India is", o:["SWly","SEly","NEly","NWly"], a:0},
+  {t:"Climatology of India", q:"Monsoon period is", o:["Jan to Feb","March to May","Jun to Sep","Oct to Dec"], a:2},
+  {t:"Climatology of India", q:"The monsoon advances with", o:["Bay of Bengal current only","Arabian Sea current only","Bay of Bengal and Arabian sea currents"], a:2},
+  {t:"Climatology of India", q:"The rainfall over India during monsoon depends on", o:["Low over Pakistan","Depression over Bay of Bengal","The position of the axis of Monsoon Trough"], a:2},
+  {t:"Climatology of India", q:"Rainfall occurs all over the country during monsoon when", o:["Axis of MT is in its normal position along Gangetic plains","Axis of MT is along Himalayas","Depression formed over Bay of Bengal"], a:0},
+  {t:"Climatology of India", q:"Break in monsoon occurs when the axis of monsoon trough is along the", o:["Gangetic plains","Foot hills of Himalayas","Bay of Bengal"], a:1},
+  {t:"Climatology of India", q:"With a Depression over the Head Bay fair weather during monsoon occurs over", o:["Assam","W Bengal","Orissa"], a:0},
+  {t:"Climatology of India", q:"Monsoon is also called", o:["Pre monsoon","Rainy Season","Post monsoon"], a:1},
+  {t:"Climatology of India", q:"Autumn Season period is", o:["Mar to May","Jun to Sept","Oct to Nov","Jan to Feb"], a:2},
+  {t:"Climatology of India", q:"During post monsoon, pressure gradient over India is", o:["Weak","Steep","Same as winters"], a:0},
+  {t:"Climatology of India", q:"During monsoon season, low pressure lies over", o:["Bay of Bengal","NE India","Central India","Pakistan"], a:3},
+  {t:"Climatology of India", q:"During vigorous monsoon period the pressure gradient over west coast is", o:["Weak","Steep","Normal"], a:1},
+  {t:"Climatology of India", q:"Flying in Monsoon from Chennai to Kolkata at 14 km a/c will experience winds", o:["Easterly","Westerly","Nly","Southerly"], a:0},
+  {t:"Climatology of India", q:"An A/C flying in Winter season from Chennai to Kolkata at 12 km will experience", o:["Ely","Wly","Nly","Sly"], a:1},
+  {t:"Climatology of India", q:"An aircraft flying in Summer season from Delhi to Kolkata at 10 km will experience", o:["Easterly","Westerly","Northerly","Southerly"], a:1},
+  {t:"Climatology of India", q:"An A/C flying in Monsoon from Mumbai to Ahmadabad at 03 km will experience", o:["SEly","SWly","Nly","NWly"], a:1},
+  {t:"Climatology of India", q:"A/C flying in winter season from Delhi to Kolkata at 06 km will experience winds", o:["SEly","SWly","Nly","NW-Wly"], a:3},
+  {t:"Climatology of India", q:"An aircraft flying in winter season from Delhi to Kolkata at 06 km will experience", o:["Port drift","Starboard drift","Tail wind","Head wind"], a:0},
+  {t:"Climatology of India", q:"Flying in winter season from Kolkata to Nagpur at 02 km will experience", o:["Port drift","Starboard drift","Tail wind","Head wind"], a:0},
+
+  // ── GENERAL CIRCULATION (from p100) ──
+  {t:"Monsoon & General Circulation", q:"During break monsoon the pressures all over the country", o:["Rise","Fall","Do not change"], a:0},
+  {t:"Monsoon & General Circulation", q:"During break monsoon sometimes surface winds over East UP and Bihar are", o:["Very strong","Weak","Normal"], a:0},
+  {t:"Monsoon & General Circulation", q:"Mid tropospheric cyclone occurs during", o:["Summer Season","Winters","Post monsoon","Monsoon"], a:3},
+  {t:"Monsoon & General Circulation", q:"Mid tropospheric cyclone during monsoon form over", o:["Orissa","Punjab","Gujarat","Chennai"], a:2},
+  {t:"Monsoon & General Circulation", q:"El Nino is", o:["Warm phase of ENSO","Cold Phase of ENSO","Good for Indian Monsoon causing more rains"], a:0},
+  {t:"Monsoon & General Circulation", q:"Maximum cyclones occur over India in", o:["Pre monsoon","Winters","Post monsoon","Monsoon"], a:2},
+  {t:"Monsoon & General Circulation", q:"Tropical Jet stream occurs in India during", o:["Pre monsoon","Winters","Post monsoon","Monsoon"], a:3},
+  {t:"Monsoon & General Circulation", q:"Pressure gradient over West Coast of India is steep during", o:["Pre monsoon","Winters","Post monsoon","Monsoon"], a:3},
+  {t:"Monsoon & General Circulation", q:"During break monsoon more rain occurs", o:["Along foot hills","NW India","S India"], a:0},
+
+  // ── ATMOSPHERE ──
+  {t:"Atmosphere", q:"Lowest layer of atmosphere is __________", o:["Troposphere", "Tropopause", "Stratosphere"], a:0},
+  {t:"Atmosphere", q:"Height of Tropopause at equator is __________", o:["8-10 km", "16-18 km", "14 km"], a:1},
+  {t:"Atmosphere", q:"Height of Tropopause at Poles is __________", o:["12 km", "13 km", "08 km"], a:2},
+  {t:"Atmosphere", q:"Higher the surface temperature __________ would be the tropopause", o:["Higher", "Lower", "Same"], a:0},
+  {t:"Atmosphere", q:"Height of tropopause __________", o:["Is constant", "Varies with altitude", "Varies with latitude"], a:2},
+  {t:"Atmosphere", q:"Above 8 km the lower temperatures are over __________", o:["Equator", "Mid Latitudes", "Poles"], a:0},
+  {t:"Atmosphere", q:"Atmosphere is heated by __________", o:["Solar Radiation", "Heat from earth surface", "From above"], a:1},
+  {t:"Atmosphere", q:"The temperature at 80 km is __________", o:["173 K", "100 K", "-137°C"], a:0},
+  {t:"Atmosphere", q:"CO2 and H2O are also called __________", o:["Green House Gases", "Rare Earth Gases", "Noble Gases"], a:0},
+  {t:"Atmosphere", q:"Troposphere is generally __________", o:["Stable", "Unstable", "Neutral"], a:1},
+  {t:"Atmosphere", q:"Stratosphere is __________", o:["Unstable", "Neutral", "Stable"], a:2},
+  {t:"Atmosphere", q:"Tropopause is discontinuous at about __________", o:["30° lat", "40° lat", "80° lat"], a:1},
+  {t:"Atmosphere", q:"Most of atmospheric mass is contained in __________", o:["Troposphere", "Stratosphere", "Heterosphere"], a:0},
+  {t:"Atmosphere", q:"Stratosphere extends from Tropopause to __________", o:["50 km", "60 km", "40 km"], a:0},
+  {t:"Atmosphere", q:"The middle atmosphere layer with temperature inversion and stability __________", o:["Troposphere", "Tropopause", "Stratosphere"], a:2},
+  {t:"Atmosphere", q:"Mother of Pearl clouds occur in __________", o:["Mesosphere", "Thermosphere", "Stratosphere"], a:2},
+  {t:"Atmosphere", q:"The temperature in ISA at 17 km is __________", o:["-56.5°C", "-65.5°C", "-35.5°C"], a:0},
+  {t:"Atmosphere", q:"By weight, approximate ratio of O2 to N2 in the atmosphere is __________", o:["1:3", "1:4", "1:5"], a:0},
+  {t:"Atmosphere", q:"By volume, the approximate ratio of O2 to N2 in the atmosphere is __________", o:["1:3", "1:4", "1:5"], a:1},
+  {t:"Atmosphere", q:"By volume, the proportion of CO2 in the atmosphere is __________", o:["3%", "0.3%", "0.03%"], a:2},
+  {t:"Atmosphere", q:"In ISA, the mean sea level temperature is __________", o:["15°C", "10°C", "25°C"], a:0},
+  {t:"Atmosphere", q:"Maximum concentration of ozone is at a height of __________", o:["10-15 km", "20-25 km", "30-35 km"], a:1},
+  {t:"Atmosphere", q:"Additional oxygen is needed while flying above __________", o:["5000 ft", "7000 ft", "10000 ft"], a:2},
+  {t:"Atmosphere", q:"CO2 and H2O keep the atmosphere __________", o:["Warm", "Cold", "No effect"], a:0},
+  {t:"Atmosphere", q:"Noctilucent clouds occur in __________", o:["Thermosphere", "Mesosphere", "Stratosphere"], a:1},
+  {t:"Atmosphere", q:"Temperature at 2 km is 05°C what is ISA deviation", o:["-05°C", "-02°C", "+03°C"], a:2},
+  {t:"Atmosphere", q:"Pressure at MSL is 1002.25 hPa. Find ISA deviation", o:["-11 hPa", "10 hPa", "12 hPa"], a:0},
+  {t:"Atmosphere", q:"In actual atmosphere temp. at 19 km is −60°C. Find ISA deviation", o:["-4.5°C", "-5.5°C", "-3.5°C"], a:2},
+  {t:"Atmosphere", q:"Nacreous clouds occur in __________", o:["Thermosphere", "Mesosphere", "Upper Stratosphere"], a:2},
+  {t:"Atmosphere", q:"The atmosphere up to 80 km has nearly similar composition is called __________", o:["Pressure", "Homosphere", "Mixing"], a:1},
+  {t:"Atmosphere", q:"Half of the atmospheric air mass is contained __________ below", o:["20000 ft", "15000 ft", "10000 ft"], a:0},
+  {t:"Atmosphere", q:"In jet standard atmosphere the lapse rate is __________", o:["2°C/1000 ft", "2°C/km", "5°C/km"], a:0},
+  {t:"Atmosphere", q:"The rate of fall of temperatures with height, called __________", o:["Isothermal rate", "Inversion rate", "Lapse rate"], a:2},
+  {t:"Atmosphere", q:"In actual atmosphere the lapse rate could __________", o:["Assume any value", "fall up to 8 km", "rise up to 50 km"], a:0},
+  {t:"Atmosphere", q:"Tropical Tropopause over India is at __________", o:["20-21 km", "14-15 km", "16-16.5 km"], a:2},
+  {t:"Atmosphere", q:"Lapse rate in troposphere is produced by __________ and in stratosphere by __________", o:["evaporation; condensation", "rising air; solar radiation", "terrestrial radiation; solar radiation"], a:1},
+  {t:"Atmosphere", q:"Most of water vapour is confined up to __________", o:["stratosphere", "30000 ft", "mid troposphere"], a:1},
+  {t:"Atmosphere", q:"Negative lapse rate is __________", o:["isothermal", "fall with height", "rise with height"], a:2},
+  {t:"Atmosphere", q:"In ICAO ISA atmosphere is isothermal __________", o:["11 to 20 km", "11 to 16 km", "11 to 32 km"], a:0},
+  {t:"Atmosphere", q:"One characteristic of atmosphere is __________", o:["Poor conductor of heat", "Equator warmer", "Density constant"], a:0},
+  {t:"Atmosphere", q:"Heat transfer maximum due to __________", o:["convection", "radiation", "latent heat"], a:2},
+  {t:"Atmosphere", q:"Height of tropopause important because __________", o:["weather confined", "clouds rarely reach", "radiation absorbed"], a:0},
+  {t:"Atmosphere", q:"In ISA tropopause occurs at __________", o:["8-10 km", "11 km", "16-18 km"], a:1},
+  {t:"Atmosphere", q:"Most heat transfer is due to __________", o:["conduction", "convection", "condensation etc"], a:2},
+  {t:"Atmosphere", q:"Temperature reversal at 8 km because __________", o:["higher lapse poles", "higher equator", "same", "reversal at pole"], a:3},
+
+  // ── TEMPERATURE ──
+  {t:"Temperature", q:"Diurnal variation of temperature is greatest when wind is __________", o:["calm", "light", "strong"], a:0},
+  {t:"Temperature", q:"Diurnal variation of temperature is maximum over __________", o:["forest", "ocean", "land"], a:2},
+  {t:"Temperature", q:"On a clear day the amount of solar radiation received by earth surface is __________", o:["¾", "30%", "5/6"], a:2},
+  {t:"Temperature", q:"ALBEDO is __________", o:["Radiation received by earth", "Amount of heat", "Reflecting power of earth"], a:2},
+  {t:"Temperature", q:"During day the ambient temperature is __________ than ground", o:["Lower", "Higher", "Same"], a:0},
+  {t:"Temperature", q:"Diurnal variation of temperature over ocean is __________", o:["More than land", "Above 3°C", "Less than 1°C"], a:2},
+  {t:"Temperature", q:"At a coastal station the diurnal variation of temperature depends on __________", o:["Wind direction", "Wind speed", "Radiation"], a:0},
+  {t:"Temperature", q:"Snow surface reflects about __________ % of solar radiation", o:["75%", "80%", "90%"], a:1},
+  {t:"Temperature", q:"Amount of solar radiation received per unit area is __________", o:["Insolation", "Convection", "Radiation"], a:0},
+  {t:"Temperature", q:"Solar radiation received by the earth is __________", o:["Long wave", "Albedo", "Shortwave"], a:2},
+  {t:"Temperature", q:"Rise in temperature of a surface is proportional to its specific heat __________", o:["Directly", "Inversely", "—"], a:1},
+  {t:"Temperature", q:"Specific heat of land is __________ than that of water", o:["Lower", "Same", "Higher"], a:0},
+  {t:"Temperature", q:"Minimum temperature is reached at __________", o:["sunrise", "midnight", "½–1 hour after dawn"], a:2},
+  {t:"Temperature", q:"An air parcel is lifted till it gets saturated. The temperature attained by it is called __________", o:["Potential temperature", "Dew point", "Wet bulb"], a:1},
+  {t:"Temperature", q:"Cloudy nights are __________", o:["cold", "normal", "warm"], a:2},
+  {t:"Temperature", q:"Water vapour is transparent to terrestrial radiation completely __________", o:["—", "partially", "indifferent"], a:1},
+  {t:"Temperature", q:"Higher the temperature __________ would be the wavelength of emitted radiation", o:["longer", "shorter", "—"], a:1},
+  {t:"Temperature", q:"Air is a bad conductor of heat. A parcel of air can therefore be regarded as insulated from the environment", o:["False", "True"], a:1},
+  {t:"Temperature", q:"Warmer the earth __________ will be the nocturnal radiation", o:["intense", "weaker", "moderate"], a:0},
+  {t:"Temperature", q:"Heat is the __________ of the KE of all the molecules and atoms of a substance", o:["sum total", "average"], a:0},
+  {t:"Temperature", q:"The solar radiation consists of about 46% __________", o:["UV", "IR", "Visible"], a:1},
+  {t:"Temperature", q:"The total energy radiated by a black body is proportional to its temperature (T) __________", o:["T²", "T³", "T⁴"], a:2},
+  {t:"Temperature", q:"Intense radiation are emitted by __________", o:["Hot bodies", "Cold bodies", "Stars"], a:0},
+  {t:"Temperature", q:"The wavelength of most intense radiation is inversely proportional to its __________", o:["Absolute temperature", "Humidity", "Albedo"], a:0},
+  {t:"Temperature", q:"Hot bodies (like sun) radiate __________", o:["Short waves", "Long waves", "Both"], a:0},
+  {t:"Temperature", q:"The flow of heat from earth surface is 77% by __________", o:["Sensible heat", "Latent heat"], a:1},
+  {t:"Temperature", q:"−40°C = −40°F", o:["True", "False"], a:0},
+  {t:"Temperature", q:"Surface temperature is recorded at a height of __________ above ground", o:["1.5 m", "1.25 m", "2 m"], a:1},
+  {t:"Temperature", q:"The door of Stevenson’s screen should open __________", o:["opposite to sun", "into sun", "any direction"], a:0},
+  {t:"Temperature", q:"The liquid used in minimum thermometer is __________", o:["mercury", "alcohol", "spirit"], a:1},
+  {t:"Temperature", q:"Freezing point of water is __________", o:["0°F", "12°F", "22°F", "32°F"], a:3},
+  {t:"Temperature", q:"Boiling point of water is __________", o:["100°F", "112°F", "212°F", "312°F"], a:2},
+  {t:"Temperature", q:"Freezing point of water is __________", o:["173 K", "273 K", "373 K", "473 K"], a:1},
+  {t:"Temperature", q:"Boiling point of water is __________", o:["373 K", "273 K", "173 K", "312 K"], a:0},
+  {t:"Temperature", q:"Convert 68°F into Kelvin temperature", o:["233 K", "283 K", "294 K", "293 K"], a:3},
+  {t:"Temperature", q:"Diurnal variation of temperature is least on a day when it is __________", o:["Clear", "Partly cloudy", "Cloudy", "Overcast"], a:3},
+  {t:"Temperature", q:"A clear and calm night is cooler than a cloudy night because nocturnal radiation __________", o:["escape through cloud", "are partly radiated back by clouds to earth", "are fully absorbed by H₂O", "are fully prevented by clouds to escape"], a:1},
+  {t:"Temperature", q:"Which surface will cause higher diurnal variation __________", o:["Forest", "Desert", "Water", "Snow"], a:1},
+  {t:"Temperature", q:"If temperature does not change in a layer with height on a day, indicates __________", o:["Isothermal layer", "Inversion", "Instability", "Uniform lapse rate"], a:0},
+   
+  // ── AIR DENSITY ──
+  {t:"Air Density", q:"Density is __________ at poles than equator", o:["Higher", "Lower", "Same"], a:0},
+  {t:"Air Density", q:"Above 8 km density is __________ at poles than at equator", o:["Higher", "Lower", "Same"], a:1},
+  {t:"Air Density", q:"The altitude in ISA at which air density is the same as the observed density is __________", o:["Density altitude", "ISA Density", "Real Density"], a:0},
+  {t:"Air Density", q:"Density is usually expressed as __________", o:["Kg/sq m", "g/cu m", "N/sq m"], a:1},
+  {t:"Air Density", q:"Higher density altitude means __________ density", o:["Higher", "Lower", "Same"], a:1},
+  {t:"Air Density", q:"For given pressure and temperature moist air has density __________", o:["Higher", "Lower", "Same"], a:1},
+  {t:"Air Density", q:"Air is less dense in __________", o:["High altitudes", "Warm air", "High humidity", "All these"], a:3},
+  {t:"Air Density", q:"Density altitude may be defined as:", o:["The altitude in ISA at which the prevailing pressure occurs", "The altitude in ISA at which the prevailing density occurs", "The altitude in actual atmosphere at which the prevailing density occurs"], a:1},
+  {t:"Air Density", q:"Temperature being constant, if pressure increases the density altitude __________", o:["increases", "lowers", "remains the same"], a:0},
+  {t:"Air Density", q:"For every 1°C change in temperature, density altitude differs from pressure altitude by __________", o:["33 ft", "100 ft", "120 ft", "210 ft"], a:2},
+
+  // ── HUMIDITY ──
+  {t:"Humidity", q:"The ratio in % between the amount of water vapour present in the air to the amount of water vapour that it can hold at the same temperature is", o:["Humidity", "Relative humidity", "Dew point"], a:1},
+  {t:"Humidity", q:"The temperature to which air be cooled at constant pressure to become saturated, is called", o:["Wet bulb temperature", "Dry bulb temperature", "Dew point", "Humidity"], a:2},
+  {t:"Humidity", q:"Free air temperature, Wet bulb temperature and Dew point temperature are equal when", o:["Air temperature is 0 deg * C", "Relative humidity is 100%", "Air temperature is not below 0 deg * C"], a:1},
+  {t:"Humidity", q:"On a rainy day compared to sunny day the length of runway required is", o:["More", "Less", "Same"], a:0},
+  {t:"Humidity", q:"The spread (difference) between Free air temperature and Dew point temperature is……………. when air is saturated", o:["Large", "Least", "Same"], a:1},
+  {t:"Humidity", q:"The saturation vapour pressure over water is………. than the ice", o:["More", "Less", "Same"], a:0},
+  {t:"Humidity", q:"As the temperature of the air increases, the amount of water vapour required to saturate it...", o:["decreases", "increases", "remains same"], a:1},
+  {t:"Humidity", q:"The actual amount of water vapour contained in a given volume of air at a given temperature is termed as …………..", o:["Relative Humidity", "Specific Humidity", "Absolute Humidity"], a:2},
+  {t:"Humidity", q:"Humidity Mixing Ratio ……….when air is lifted adiabatically", o:["decreases", "remains constant", "increases"], a:1},
+  {t:"Humidity", q:"It is the lowest temperature which air would attain by evaporating water into it to saturate it.", o:["Wet bulb temp", "Dry bulb temp", "Dew point"], a:0},
+
+
+  // ── WIND ──
+  {t:"Wind", q:"In S hemisphere if an observer faces wind, low will be to his", o:["Right", "Left"], a:1},
+  {t:"Wind", q:"In N hemisphere due to rotation of earth winds are deflected to", o:["Left", "Right"], a:1},
+  {t:"Wind", q:"Local Winds follow Buys Ballots law", o:["False", "True"], a:0},
+  {t:"Wind", q:"Coriolis force acts perpendicular to the of wind direction in N hemisphere", o:["Left", "Right"], a:1},
+  {t:"Wind", q:"Geostrophic wind is due to the balance between the forces", o:["Coriolis and Frictional", "Pressure gradient and Cyclostrophic", "Pressure gradient and Coriolis"], a:2},
+  {t:"Wind", q:"Coriolis force is strongest at", o:["Mid latitudes", "Poles", "Equator"], a:1},
+  {t:"Wind", q:"Geostrophic rule breaks down at", o:["Mid latitudes", "Poles", "Equator"], a:2},
+  {t:"Wind", q:"Fohn winds are on the Leeward side of a mountain.", o:["Dry & Warm", "Cold & Humid"], a:0},
+  {t:"Wind", q:"The wind sliding down a hill during night is called……… wind.", o:["Fohn", "Anabatic", "Katabatic"], a:2},
+  {t:"Wind", q:"With the onset of sea breeze there is a …..in temperature and ………….. in RH.", o:["Fall/Rise", "Rise/Fall", "Fall/Fall"], a:0},
+  {t:"Wind", q:"Sea breeze sets in by……… and dies off at……..", o:["Night/Day", "Day/Night", "Both Day and Night"], a:1},
+  {t:"Wind", q:"If an aircraft in N-hemisphere flies from H to L it will experience", o:["Starboard drift", "Port drift"], a:0},
+  {t:"Wind", q:"In N-Hemisphere if you experience Port drift, altimeter will read", o:["Under", "Over"], a:0},
+  {t:"Wind", q:"Lines of constant wind speed drawn on weather charts are called", o:["Isobars", "Isotachs", "Isogons"], a:1},
+  {t:"Wind", q:"Squall are distinguished from gusts by:", o:["Shorter duration", "Longer duration", "Lower wind speed"], a:1},
+  {t:"Wind", q:"The thermal wind is:", o:["The wind that blows because of thermals", "The warm wind that blows down the hill on the leeward side", "The wind which must be added vectorially to the lower level geostrophic wind to obtain the upper level geostrophic wind"], a:2},
+  {t:"Wind", q:"On a weather map if isobars are closely packed, the surface winds are likely to be", o:["Light and parallel to isobars", "Strong and parallel to isobars", "Strong and blowing across the isobars"], a:1},
+  {t:"Wind", q:"Anabatic wind occurs", o:["At night", "Any time of day and night", "During day"], a:2},
+  {t:"Wind", q:"Anabatic wind is stronger than katabatic", o:["True", "False"], a:1},
+  {t:"Wind", q:"Katabatic wind is down slope cold wind due to nocturnal cooling", o:["True", "False"], a:0},
+  {t:"Wind", q:"Katabatic wind occur due to sinking of cold air down the hill slope", o:["True", "False"], a:0},
+  {t:"Wind", q:"Anabatic wind occur due to downward movement of air along valley", o:["True", "False"], a:1},
+  {t:"Wind", q:"Sea breeze is stronger than land breeze", o:["True", "False"], a:0},
+  {t:"Wind", q:"The wind blows clockwise around a low in N-hemisphere", o:["True", "False"], a:1},
+  {t:"Wind", q:"The wind blows clockwise around a low in S-hemisphere", o:["True", "False"], a:0},
+  {t:"Wind", q:"The wind blows anticlockwise around a low in N-hemisphere", o:["True", "False"], a:0},
+  {t:"Wind", q:"The wind blows anticlockwise around a low in S- hemisphere", o:["True", "False"], a:1},
+  {t:"Wind", q:"The resultant wind that blows under the influence of pressure gradient force, geostrophic force and cyclostrophic force is called", o:["Gradient wind", "Geostrophic wind", "Cyclostrophic wind"], a:0},
+  {t:"Wind", q:"Due to friction, from day to night for an isobaric pattern (in N hemisphere) the surface wind backs and weakens", o:["True", "False"], a:0},
+  {t:"Wind", q:"The winds which spirals inward counter-clockwise in the N Hemisphere are associated with", o:["Turbulence", "High pressure area", "Low pressure area"], a:2},
+  {t:"Wind", q:"Lower level wind 05010 kt, upper level wind 23005 kt, what is the thermal wind", o:["05005 kt", "23015 kt", "05015 kt"], a:1},
+  {t:"Wind", q:"A change in wind direction from 310° to 020° is", o:["Backing", "Veering"], a:1},
+  {t:"Wind", q:"A change from 270° to 250° is", o:["Backing", "Veering"], a:0},
+  {t:"Wind", q:"Sudden changes in wind speed from 10 kt to 30 kt and then to 15 kt are", o:["Gust", "Squall", "gale"], a:0},
+  {t:"Wind", q:"Sudden change in wind speed from 10 kt to 30 kt for 2-3 minutes", o:["Squall", "Gust"], a:0},
+  {t:"Wind", q:"A significant wind shear is generally associated with TS or line squall", o:["False", "True"], a:1},
+  {t:"Wind", q:"Cyclostrophic wind gives a good approximation of the 2000' wind in an intense tropical storm", o:["True", "False"], a:0},
+  {t:"Wind", q:"Rotor clouds have extremely turbulent flying conditions", o:["False", "True"], a:1},
+  {t:"Wind", q:"Friction causes winds to flow cross isobaric by over land and over sea", o:["20°/10°", "30°/15°", "40°/30°"], a:1},
+  {t:"Wind", q:"If the S is warmer than the N, level by level, from surface up to higher levels, then wind will strengthen with height with no change in direction in N the hemisphere", o:["Ely", "Wly", "Sly", "Nly"], a:1},
+  {t:"Wind", q:"Gradient wind is………… of the geostrophic wind in an anticyclone", o:["Under estimate", "Accurate", "Over estimate"], a:2},
+  {t:"Wind", q:"Gale is", o:["Persistent strong winds with mean speed 44 kt, associated with thunderstorm", "Marked increase in wind speed lasing few minutes associated with CB or DS", "Persistent strong winds exceeding 33 kt, associated with depression"], a:2},
+  {t:"Wind", q:"In N hemisphere thermal wind is parallel to………. with low value to left", o:["Isobars", "Isotherms", "Isallobars"], a:1},
+  {t:"Wind", q:"The inertial flow is", o:["cyclonic in both the Hemispheres", "anti cyclonic in both the Hemispheres", "anti cyclonic around an anticyclone"], a:1},
+  {t:"Wind", q:"Upper level wind is 24025 kt, lower level wind is 06015 kt, the thermal wind is?", o:["16010 kt", "24040 kt", "24010 kt"], a:1},
+
+  // ── VERTICAL MOTION AND CLOUDS ──
+  {t:"Vertical Motion and Clouds", q:"Drizzle occurs from", o:["CS", "ST", "NS", "CU"], a:1},
+  {t:"Vertical Motion and Clouds", q:"Altostratus (AS) is", o:["Low cloud of sheet type", "A medium cloud of sheet type", "A cloud of large vertical growth", "A high cloud of sheet type"], a:1},
+  {t:"Vertical Motion and Clouds", q:"Showers occurs from", o:["CU", "CB", "AS", "AC"], a:1},
+  {t:"Vertical Motion and Clouds", q:"Heavy icing is possible in", o:["CI", "CS", "ST", "CB"], a:3},
+  {t:"Vertical Motion and Clouds", q:"To avoid icing in cloudy conditions, a pilot is advised to fly through a cloud which shows optical phenomena", o:["Halo", "Corona", "With multi-coloured clouds"], a:0},
+  {t:"Vertical Motion and Clouds", q:"Dark gray cloud giving continuous rain is called", o:["AS", "NS", "ST", "CB"], a:1},
+  {t:"Vertical Motion and Clouds", q:"A uniform layer of cloud resembling fog but not on the ground", o:["AS", "NS", "ST"], a:2},
+  {t:"Vertical Motion and Clouds", q:"The clouds composed of ice crystals having feathery appearance", o:["CI", "CS", "AS"], a:0},
+  {t:"Vertical Motion and Clouds", q:"NS clouds occur", o:["At cold front", "At warm front"], a:1},
+  {t:"Vertical Motion and Clouds", q:"Halo is associated with the cloud", o:["AC", "AS", "CS", "CI"], a:2},
+  {t:"Vertical Motion and Clouds", q:"Corona is associated with the cloud", o:["AS", "AC", "CC", "CS"], a:0},
+  {t:"Vertical Motion and Clouds", q:"Lenticular clouds indicate presence of", o:["Warm Front", "Cold front", "Mountain waves"], a:2},
+  {t:"Vertical Motion and Clouds", q:"The lowest level below which condensation trails will not form is", o:["Mintra Level", "Drytra Level", "Maxtra Level"], a:0},
+  {t:"Vertical Motion and Clouds", q:"Rain falling from cloud but not reaching ground is", o:["Virgo", "Virga", "Mirage"], a:1},
+  {t:"Vertical Motion and Clouds", q:"CB with distinct anvil is called", o:["Castellaneous", "Capillatus", "Uncinus"], a:1},
+  {t:"Vertical Motion and Clouds", q:"Cloud ceiling is the height of the cloud covering", o:["3-4/8", "8/8", "5/8 or more"], a:2},
+  {t:"Vertical Motion and Clouds", q:"No condensation trails occur above", o:["Maxtra Level", "Drytra Level", "Mintra Level"], a:0},
+  {t:"Vertical Motion and Clouds", q:"Cloud of operational significance has base below ……… m or below the highest minimum sector altitude, which is greater", o:["1500", "2000", "1000"], a:0},
+  {t:"Vertical Motion and Clouds", q:"AC cloud with cumuliform protuberances are indicative of", o:["Stability", "Instability", "Neutrality"], a:1},
+  {t:"Vertical Motion and Clouds", q:"Hail may be experienced under the anvil of a CB", o:["True", "False"], a:0},
+
+  // ── STABILITY OF ATMOSPHERE ──
+  {t:"Stability of Atmosphere", q:"DALR = 9.8°C, ELR = 6.8°C ; atmosphere is", o:["stable", "unstable", "indifferent"], a:0},
+  {t:"Stability of Atmosphere", q:"SALR = 5.5°C, ELR = 4.5°C ; atmosphere is", o:["unstable", "stable", "indifferent"], a:1},
+  {t:"Stability of Atmosphere", q:"DALR > ELR > SALR", o:["conditionally unstable", "latently stable", "potentially stable"], a:0},
+  {t:"Stability of Atmosphere", q:"Dry air is unstable when:", o:["ELR = DALR", "ELR > DALR", "ELR < DALR"], a:1},
+  {t:"Stability of Atmosphere", q:"The saturated air is said to be unstable if", o:["SALR = ELR", "SALR < ELR", "SALR > ELR"], a:1},
+  {t:"Stability of Atmosphere", q:"If ELR = SALR = DALR the atmosphere is", o:["Stable", "Instable", "Indifferent"], a:2},
+  {t:"Stability of Atmosphere", q:"DALR means:", o:["The rate at which temperature of unsaturated parcel of air falls with height when made to ascend adiabatically", "The rate at which temp falls with height", "The rate at which ascending parcel of saturated air cools"], a:0},
+  {t:"Stability of Atmosphere", q:"Surface temp. is 30°C. Assuming DALR what is the temperature at 2 km", o:["18°C", "10°C", "42°C"], a:1},
+  {t:"Stability of Atmosphere", q:"An Isothermal atmosphere is:", o:["Stable", "Unstable", "Neutral"], a:0},
+  {t:"Stability of Atmosphere", q:"If ELR is less than SALR, the atmosphere is said to be:", o:["Absolutely unstable", "Conditionally unstable", "Absolutely stable"], a:2},
+  {t:"Stability of Atmosphere", q:"DALR is approximately", o:["5°C/km", "15°C/km", "10°C/km"], a:2},
+  {t:"Stability of Atmosphere", q:"SALR at mean sea level is about", o:["10°C/Km", "5°C/Km", "5°F/Km"], a:1},
+  {t:"Stability of Atmosphere", q:"SALR approaches DALR", o:["at 0°C", "at -15°F", "at -40°C"], a:2},
+  {t:"Stability of Atmosphere", q:"Dry air having a temperature of 35°C on surface when forced to rise adiabatically by 1 km would attain a temperature of", o:["29°C", "25°C", "45°C"], a:1},
+  {t:"Stability of Atmosphere", q:"Inversion in the atmosphere indicates", o:["Stability", "Instability", "Neutrality"], a:0},
+  {t:"Stability of Atmosphere", q:"Inversion is ……… Lapse Rate (LR)", o:["Positive", "Negative", "Neutral"], a:1},
+  {t:"Stability of Atmosphere", q:"Environmental LR can be more than DALR", o:["True", "False"], a:0},
+  {t:"Stability of Atmosphere", q:"The process which to a large extent determines the vertical distribution of temperature in atmosphere is", o:["Adiabatic", "Isothermal", "Isentropic"], a:0},
+  {t:"Stability of Atmosphere", q:"Rise in temperature with height is", o:["Inversion", "Lapse", "Normal"], a:0},
+  {t:"Stability of Atmosphere", q:"Inversion is common in", o:["Post Monsoon", "Monsoon", "Winters"], a:2},
+
+  // ── OPTICAL PHENOMENA ──
+  {t:"Optical Phenomena", q:"Aurora Australis occur in the", o:["S hemisphere", "N hemisphere", "Equator"], a:0},
+  {t:"Optical Phenomena", q:"Aurora Australis called .......... Lights", o:["Northern", "Southern", "Temperate"], a:1},
+  {t:"Optical Phenomena", q:"Aurora Borealis occur in the", o:["S hemisphere", "N hemisphere", "Equator"], a:1},
+  {t:"Optical Phenomena", q:"Aurora Borealis are called .......... Lights", o:["Northern", "Southern", "Temperate"], a:0},
+  {t:"Optical Phenomena", q:"Corona occur in .......... clouds", o:["AS", "NS", "CS"], a:0},
+  {t:"Optical Phenomena", q:"Bishop's ring is due to the diffraction of light by fine particles of", o:["water", "dust", "ice"], a:1},
+  {t:"Optical Phenomena", q:"The radius of the Bishop's ring is about", o:["32°", "22°", "42°"], a:1},
+  {t:"Optical Phenomena", q:"Superior Mirage occurs in marked", o:["Lapse", "Isothermal", "Inversion"], a:2},
+  {t:"Optical Phenomena", q:"Inferior Mirage occurs when there is", o:["Lapse", "Isothermal", "Inversion"], a:0},
+  {t:"Optical Phenomena", q:"Corona are formed due to the .......... of light", o:["Refraction", "Diffraction", "Scattering"], a:1},
+  {t:"Optical Phenomena", q:"Corona are formed due to light, passing through", o:["Mist only", "Fog only", "small water or ice particles only", "Any one of all these"], a:3},
+  {t:"Optical Phenomena", q:"Halo is produced by", o:["Refraction", "Diffraction", "Scattering"], a:0},
+  {t:"Optical Phenomena", q:"Halo is produced when light passes through", o:["water particles", "ice crystals", "both"], a:1},
+  {t:"Optical Phenomena", q:"Halo occur in the cloud", o:["AS", "NS", "CS"], a:2},
+  {t:"Optical Phenomena", q:"Halo is luminous ring of .......... radius", o:["32°", "22°", "42°"], a:1},
+  {t:"Optical Phenomena", q:"Halo round the sun shows a pure clear .......... on the outside", o:["Red", "Yellow", "Violet"], a:0},
+  {t:"Optical Phenomena", q:"Halo signifies predominance in the cloud of", o:["Supercooled water drops", "Ice crystals", "Both"], a:1},
+  {t:"Optical Phenomena", q:"The cloud which cause Halo has .......... chances of ice accretion", o:["negligible", "maximum", "medium"], a:0},
+  {t:"Optical Phenomena", q:"Sometimes a halo with a radius of .......... is observed, called Large Halo", o:["32°", "42°", "22°"], a:1},
+  {t:"Optical Phenomena", q:"Halo occurs from .......... cloud", o:["Low", "Medium", "High"], a:2},
+];
+
+// ── State ──
+let activeTopics = new Set();
+let quizMode = 'all';
+let questions = [];
+let current = 0;
+let correct = 0;
+let wrong = 0;
+let xp = 0;
+let streak = 0;
+let timer = null;
+let timeLeft = 20;
+let answered = false;
+let topicStats = {};
+let wrongQs = [];
+
+// ── Build topic list ──
+const topics = [...new Set(ALL_QUESTIONS.map(q => q.t))];
+
+function buildTopicGrid() {
+  const grid = document.getElementById('topicGrid');
+  grid.innerHTML = '';
+  // Count per topic
+  const counts = {};
+  ALL_QUESTIONS.forEach(q => { counts[q.t] = (counts[q.t]||0)+1; });
+
+  // All topics btn
+  const allBtn = document.createElement('button');
+  allBtn.className = 'topic-btn active';
+  allBtn.id = 'topic_ALL';
+  allBtn.innerHTML = `📚 All Topics<span class="count">${ALL_QUESTIONS.length} Qs</span>`;
+  allBtn.onclick = () => toggleTopic('ALL', allBtn);
+  grid.appendChild(allBtn);
+
+  topics.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'topic-btn';
+    btn.id = 'topic_' + t.replace(/\s+/g,'_');
+    btn.innerHTML = `${topicEmoji(t)} ${t}<span class="count">${counts[t]} Qs</span>`;
+    btn.onclick = () => toggleTopic(t, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function topicEmoji(t) {
+  const map = {
+    'Optical Phenomena': '🌈',
+    'Visibility & Fog': '🌫️',
+    'Precipitation': '🌧️',
+    'Ice Accretion': '🧊',
+    'Thunderstorm': '⛈️',
+    'Air Masses, Fronts & WD': '🌪️',
+    'Jet Streams': '💨',
+    'CAT & Mountain Waves': '⛰️',
+    'Tropical Systems': '🌀',
+    'Climatology of India': '🇮🇳',
+    'Monsoon & General Circulation': '☁️',
+    'Atmospheric Pressure': '🌡️',
+    'Atmosphere': '🌍',
+    'Temperature': '🔥',
+    'Air Density': '🎈',
+    'Humidity': '💧',
+    'Wind': '🌬️',
+    'Vertical Motion and Clouds': '☁️',
+    'Stability of Atmosphere': '⚖️',
+  };
+  return map[t] || '📋';
+}
+
+function toggleTopic(t, btn) {
+  const allBtn = document.getElementById('topic_ALL');
+  if (t === 'ALL') {
+    activeTopics.clear();
+    document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    allBtn.classList.remove('active');
+    btn.classList.toggle('active');
+    if (btn.classList.contains('active')) {
+      activeTopics.add(t);
+    } else {
+      activeTopics.delete(t);
+    }
+    if (activeTopics.size === 0) {
+      allBtn.classList.add('active');
+    }
+  }
+}
+
+function setMode(m) {
+  quizMode = m;
+  document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('mode' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active');
+}
+
+function getQuestions() {
+  let pool;
+  if (activeTopics.size === 0) {
+    pool = [...ALL_QUESTIONS];
+  } else {
+    pool = ALL_QUESTIONS.filter(q => activeTopics.has(q.t));
+  }
+
+  if (quizMode === 'weak' && wrongQs.length > 0) {
+    pool = wrongQs;
+  }
+
+  // Shuffle
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  if (quizMode === 'random') return pool.slice(0, 30);
+  return pool;
+}
+
+function startQuiz() {
+  questions = getQuestions();
+  if (questions.length === 0) { alert('No questions match. Please adjust filters.'); return; }
+  current = 0;
+  correct = 0;
+  wrong = 0;
+  xp = 0;
+  streak = 0;
+  topicStats = {};
+  wrongQs = [];
+  answered = false;
+
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  if (current >= questions.length) { showResults(); return; }
+  answered = false;
+  const q = questions[current];
+
+  // Header
+  document.getElementById('qLabel').textContent = `Q ${current+1} / ${questions.length}`;
+  document.getElementById('progressFill').style.width = ((current/questions.length)*100) + '%';
+  document.getElementById('qTopic').textContent = q.t;
+  document.getElementById('qNum').textContent = `Q${String(current+1).padStart(3,'0')}`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('scoreC').textContent = correct;
+  document.getElementById('scoreW').textContent = wrong;
+  document.getElementById('xpVal').textContent = xp;
+
+  // Hide feedback
+  const fb = document.getElementById('feedbackBar');
+  fb.className = 'feedback-bar';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  // Options
+  const grid = document.getElementById('optGrid');
+  grid.innerHTML = '';
+  const keys = ['A','B','C','D'];
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-key">${keys[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i, btn);
+    grid.appendChild(btn);
+  });
+
+  // Timer
+  clearInterval(timer);
+  timeLeft = 20;
+  updateTimer();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      if (!answered) timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const el = document.getElementById('timerVal');
+  el.textContent = timeLeft;
+  el.className = 'timer-val' + (timeLeft <= 5 ? ' danger' : timeLeft <= 10 ? ' warn' : '');
+}
+
+function selectAnswer(idx, btn) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timer);
+
+  const q = questions[current];
+  const opts = document.querySelectorAll('.opt-btn');
+  opts.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === q.a;
+
+  // Highlight
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) opts[q.a].classList.add('correct');
+
+  // Stats
+  if (!topicStats[q.t]) topicStats[q.t] = {c:0, t:0};
+  topicStats[q.t].t++;
+
+  if (isCorrect) {
+    correct++;
+    streak++;
+    const xpGain = 10 + (streak >= 3 ? streak * 2 : 0) + (timeLeft >= 15 ? 5 : 0);
+    xp += xpGain;
+    topicStats[q.t].c++;
+    showXP('+' + xpGain + ' XP');
+    if (streak >= 3) showStreak(streak);
+    showFeedback(true, null);
+  } else {
+    wrong++;
+    streak = 0;
+    wrongQs.push(q);
+    hideStreak();
+    showFeedback(false, q.o[q.a]);
+  }
+
+  document.getElementById('scoreC').textContent = correct;
+  document.getElementById('scoreW').textContent = wrong;
+  document.getElementById('xpVal').textContent = xp;
+  document.getElementById('nextBtn').style.display = 'inline-flex';
+}
+
+function timeUp() {
+  answered = true;
+  const q = questions[current];
+  const opts = document.querySelectorAll('.opt-btn');
+  opts.forEach(b => b.disabled = true);
+  opts[q.a].classList.add('correct');
+  wrong++;
+  streak = 0;
+  wrongQs.push(q);
+  if (!topicStats[q.t]) topicStats[q.t] = {c:0, t:0};
+  topicStats[q.t].t++;
+  showFeedback(false, q.o[q.a]);
+  document.getElementById('scoreW').textContent = wrong;
+  document.getElementById('nextBtn').style.display = 'inline-flex';
+}
+
+function showFeedback(ok, correctAns) {
+  const fb = document.getElementById('feedbackBar');
+  fb.className = 'feedback-bar show ' + (ok ? 'correct-fb' : 'wrong-fb');
+  document.getElementById('fbIcon').textContent = ok ? '✅' : '❌';
+  document.getElementById('fbText').textContent = ok
+    ? 'Correct! Well done.'
+    : `Incorrect. The correct answer is: ${correctAns}`;
+}
+
+function skipQ() {
+  clearInterval(timer);
+  current++;
+  renderQuestion();
+}
+
+function nextQ() {
+  current++;
+  renderQuestion();
+}
+
+function showXP(text) {
+  const el = document.createElement('div');
+  el.className = 'xp-pop';
+  el.textContent = text;
+  el.style.left = (Math.random() * 60 + 20) + '%';
+  el.style.top = '30%';
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('fly'));
+  setTimeout(() => el.remove(), 900);
+}
+
+let streakTimeout;
+function showStreak(n) {
+  const el = document.getElementById('streakPop');
+  document.getElementById('streakCount').textContent = n;
+  el.classList.add('show');
+  clearTimeout(streakTimeout);
+  streakTimeout = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function hideStreak() {
+  document.getElementById('streakPop').classList.remove('show');
+}
+
+// ── RESULTS ──
+function showResults() {
+  clearInterval(timer);
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  const total = correct + wrong;
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  // Animated ring
+  setTimeout(() => {
+    const fill = document.getElementById('ringFill');
+    const circumference = 440;
+    const offset = circumference - (pct / 100) * circumference;
+    fill.style.strokeDashoffset = offset;
+    fill.style.stroke = pct >= 80 ? '#34d399' : pct >= 60 ? '#38bdf8' : pct >= 40 ? '#fbbf24' : '#f87171';
+  }, 100);
+
+  document.getElementById('pctText').textContent = pct + '%';
+  document.getElementById('rsCorrect').textContent = correct;
+  document.getElementById('rsWrong').textContent = wrong;
+  document.getElementById('rsXP').textContent = xp;
+
+  // Grade
+  let grade, sub, emoji;
+  if (pct >= 90) { grade = 'CAPTAIN'; sub = 'Outstanding performance! You\'re cleared for takeoff.'; emoji = '🏆'; }
+  else if (pct >= 80) { grade = 'FIRST OFFICER'; sub = 'Excellent! Minor refinements needed.'; emoji = '✈️'; }
+  else if (pct >= 70) { grade = 'SENIOR PILOT'; sub = 'Good job! Review weak areas.'; emoji = '😊'; }
+  else if (pct >= 60) { grade = 'PILOT'; sub = 'Passed. Keep studying!'; emoji = '📚'; }
+  else if (pct >= 50) { grade = 'STUDENT PILOT'; sub = 'Below average. More study required.'; emoji = '📖'; }
+  else { grade = 'PRE-SOLO'; sub = 'Return to ground school. You can do it!'; emoji = '💪'; }
+
+  document.getElementById('resultPlane').textContent = emoji;
+  document.getElementById('gradeText').textContent = grade;
+  document.getElementById('gradeSub').textContent = sub;
+
+  // Topic breakdown
+  const bd = document.getElementById('topicBreakdown');
+  bd.innerHTML = '<h3>📊 Topic Breakdown</h3>';
+  Object.entries(topicStats).forEach(([t, s]) => {
+    const tPct = s.t > 0 ? Math.round((s.c/s.t)*100) : 0;
+    const color = tPct >= 80 ? '#34d399' : tPct >= 60 ? '#38bdf8' : tPct >= 40 ? '#fbbf24' : '#f87171';
+    bd.innerHTML += `
+      <div class="tb-row">
+        <span class="tb-name">${topicEmoji(t)} ${t}</span>
+        <div class="tb-bar-wrap"><div class="tb-bar" style="width:${tPct}%;background:${color}"></div></div>
+        <span class="tb-score">${s.c}/${s.t}</span>
+      </div>`;
+  });
+
+  // Confetti if >= 70%
+  if (pct >= 70) launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#38bdf8','#34d399','#fbbf24','#f87171','#a78bfa','#fb923c'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+      el.style.animationDelay = '0s';
+      el.style.width = (6 + Math.random()*6) + 'px';
+      el.style.height = (6 + Math.random()*6) + 'px';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }, i * 50);
+  }
+}
+
+function retryWrong() {
+  if (wrongQs.length === 0) { alert('No wrong answers to retry!'); return; }
+  questions = [...wrongQs];
+  for (let i = questions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [questions[i], questions[j]] = [questions[j], questions[i]];
+  }
+  current = 0; correct = 0; wrong = 0; xp = 0; streak = 0;
+  topicStats = {}; wrongQs = []; answered = false;
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQuestion();
+}
+
+function goHome() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('home').style.display = 'flex';
+}
+
+// ── Init ──
+buildTopicGrid();
+</script>
+</body>
+</html>
